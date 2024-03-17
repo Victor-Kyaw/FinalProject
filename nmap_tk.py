@@ -84,8 +84,8 @@ dbg = '#000000'
 fgc = '#111111'
 pbc = "#ff05bc"
 
-gui.tk_setPalette(background=pbc, foreground=m1c, activeBackground=fgc,activeForeground=bgc, highlightColor=m1c, highlightBackground=m1c)
-# gui.tk_setPalette(background=bgc, foreground=m1c, activeBackground=fgc,activeForeground=bgc, highlightColor=m1c, highlightBackground=m1c)
+#gui.tk_setPalette(background=pbc, foreground=m1c, activeBackground=fgc,activeForeground=bgc, highlightColor=m1c, highlightBackground=m1c)
+gui.tk_setPalette(background=bgc, foreground=m1c, activeBackground=fgc,activeForeground=bgc, highlightColor=m1c, highlightBackground=m1c)
 
 # ==== Labels ====
 L11 = Label(gui, text = "Mel Lone's Port Scanner",  font=("Helvetica", 16, 'underline'))
