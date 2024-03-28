@@ -8,20 +8,14 @@ PROXY_URL = "http://127.0.0.1:8080"  # Burp Suite proxy address
 
 # Function to change security level
 def change_security_level(security_level):
-    # Configure proxy settings for Burp Suite
-    proxies = {
-        'http': PROXY_URL,
-        'https': PROXY_URL
-    }
-
     # Prepare data for the security level change request
     data = {
         'security': security_level,
         'seclev_submit': 'Submit'
     }
 
-    # Send the request to change the security level through Burp Suite proxy
-    response = requests.post(DVWA_SECURITY_URL, data=data, proxies=proxies)
+    # Send the request to change the security level directly to DVWA
+    response = requests.post(DVWA_SECURITY_URL, data=data)
 
     # Check if the security level change was successful
     if f"Security level is now {security_level.capitalize()}" in response.text:
