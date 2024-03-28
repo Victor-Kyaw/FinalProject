@@ -13,11 +13,11 @@ def change_security_level(security_level, username, password):
         'password': password,
         'Login': 'Login'
     }
-
+    print(login_data)
     # Send login request to obtain session cookies
     session = requests.Session()
     session.post(DVWA_LOGIN_URL, data=login_data)
-
+    
     # Prepare data for the security level change request
     data = {
         'security': security_level,
