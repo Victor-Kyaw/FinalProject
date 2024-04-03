@@ -50,9 +50,11 @@ class DVWASessionProxy:
     
     @security.setter
     def security(self, security_level):
-
-        self._session.cookies.pop("security")
+        #self._session.cookies.pop("security")
+        if 'security' in self._session.cookies.keys():
+            self._session.cookies.pop('security', None)
         self._session.cookies.set("security", security_level.value)
+        print(self._session.cookies)
  
     @property
     def user_token(self):
