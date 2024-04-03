@@ -5,7 +5,7 @@ url = 'http://localhost/DVWA/login.php'
 
 # Usernames and passwords to try
 usernames = ['admin']
-passwords = ['password1', 'password2', '123456', 'admin']
+passwords = ['password1', 'password2', '123456', 'admin', 'password']
 
 # Headers to mimic a real browser visit
 headers = {
