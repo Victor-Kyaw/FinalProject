@@ -65,9 +65,14 @@ def attack():
                 print("")
                 print(f"[+] Found: {password}")
                 listbox.insert("Found", str(password))
+                updateResult()
                 break
 
-            
+def updateResult():
+	rtext = " [ Target ] ~ " + str(password)
+	L27.configure(text = rtext)
+
+        
 
 ####
 
@@ -122,6 +127,12 @@ def create_window():
     switch_button.place(x=150, y=50)
     # switch_button.pack(pady=50)
 
+    L26 = Label(gui, text = "Results: ")
+    L26.place(x = 16, y = 220)
+    L27 = Label(gui, text = "[ ... ]")
+    L27.place(x = 180, y = 22)
+
+    
     # Text box
     frame = Frame(root)
     frame.place(x = 16, y = 275, width = 370, height = 215)
