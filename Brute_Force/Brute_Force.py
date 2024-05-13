@@ -150,6 +150,7 @@ lb2.pack()
 
 text = tk.Text(root, height=12, width=50)
 
+
 scroll = tk.Scrollbar(root) 
 text.configure(yscrollcommand=scroll.set) 
 text.pack(side=tk.LEFT) 
@@ -182,6 +183,8 @@ Use protection mechanisms such as Two-Factor Authentication (2FA), Security Key 
 """
 
 text.insert(tk.END,insert_text)
+
+text.config(state=tk.DISABLED)
 
     # Run the main event loop
 root.mainloop()
